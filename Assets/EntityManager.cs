@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Pool;
 using UnityEngine.Profiling;
 
-public class EntityManager : MonoBehaviour, ISortableProvider
+public class EntityManager : MonoBehaviour
 {
     [SerializeField]
     private GameObject prefab;
@@ -23,18 +24,40 @@ public class EntityManager : MonoBehaviour, ISortableProvider
     [SerializeField]
     private BoxCollider2D spawnArea;
 
-    public UnityEvent FinishedUpdate;
+    public UnityEvent<ISortable[]> NewISortablesArray;
 
-    [SerializeField]
-    private int testStartAmount;
+    private ObjectPool<Entity> entityPool;
 
-    public ISortable[] GetISortables() {
-        return entities.ToArray();
+    private void Awake() {
+        entityPool = new ObjectPool<Entity>(
+                createFunc: CreateEntity,
+                actionOnGet: OnGetEntity,
+                actionOnRelease: OnReleaseEntity,
+                actionOnDestroy: OnDestroyEntity,
+                defaultCapacity: 100,
+                maxSize: int.MaxValue
+            );
     }
 
-    private void Start() {
-        SpawnEntitiesToLimit(testStartAmount);
+    #region Pooling functions
+    private Entity CreateEntity() {
+        GameObject newInstance = Instantiate(prefab, GetRandomSpotWithinSpawnArea(), Quaternion.identity);
+        SpriteRenderer sr = newInstance.GetComponent<SpriteRenderer>();
+        return new Entity(newInstance.transform, sr);
     }
+
+    private void OnGetEntity(Entity entity) {
+        entity.transform.gameObject.SetActive(true);
+    }
+
+    private void OnReleaseEntity(Entity entity) {
+        entity.transform.gameObject.SetActive(false);
+    }
+
+    private void OnDestroyEntity(Entity entity) {
+        Destroy(entity.transform.gameObject);
+    }
+    #endregion
 
     private void UpdateDistancesToReference() {
         Profiler.BeginSample("UpdateEntityDistances");
@@ -76,25 +99,28 @@ public class EntityManager : MonoBehaviour, ISortableProvider
         return spawnArea.OverlapPoint(pos);
     }
 
-    private void Update() {
+    public void UpdateEntities() {
         Profiler.BeginSample("EntityUpdate");
         MoveEntities();
         UpdateDistancesToReference();
         Profiler.EndSample();
-        FinishedUpdate?.Invoke();
     }
 
-    public void SpawnEntitiesToLimit(int limit) {
-        int amountToSpawn = limit - entities.Count;
-
-        GameObject newInstance;
-        SpriteRenderer sr;
-
-        for (int i = 0; i < amountToSpawn; i++) {
-            newInstance = Instantiate(prefab, GetRandomSpotWithinSpawnArea(), Quaternion.identity);
-            sr = newInstance.GetComponent<SpriteRenderer>();
-            entities.Add(new Entity(newInstance.transform, sr));
+    public void SetEntityCount(int limit) {
+        if(entities.Count > limit) {
+            int newEntitiesAmount = entities.Count - limit;
+            for (int i = 0; i < newEntitiesAmount; i++) {
+                entities.Add(entityPool.Get());
+            }
+        } else if(entities.Count < limit) {
+            for (int i = entities.Count; i < limit; i--) {
+                Entity entity = entities[i];
+                entities.Remove(entity);
+                entityPool.Release(entity);
+            }
         }
+
+        NewISortablesArray?.Invoke(entities.ToArray());
     }
 }
 
