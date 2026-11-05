@@ -13,7 +13,7 @@ public class EntityManager : MonoBehaviour
     private GameObject prefab;
 
     [SerializeField]
-    private Transform referenceTransform;
+    private Entity referenceEntity;
 
     private List<Entity> entities = new List<Entity>();
 
@@ -37,6 +37,8 @@ public class EntityManager : MonoBehaviour
                 defaultCapacity: 100,
                 maxSize: int.MaxValue
         );
+
+
     }
 
     #region Pooling functions
@@ -62,7 +64,7 @@ public class EntityManager : MonoBehaviour
     private void UpdateDistancesToReference() {
         Profiler.BeginSample("UpdateEntityDistances");
         for (int i = 0; i < entities.Count; i++) {
-            entities[i].SortValue = Vector2.Distance(referenceTransform.position, entities[i].transform.position);
+            entities[i].SortValue = Vector2.Distance(referenceEntity.transform.position, entities[i].transform.position);
         }
         Profiler.EndSample();
     }
@@ -105,6 +107,7 @@ public class EntityManager : MonoBehaviour
 
     public void Update() {
         Profiler.BeginSample("EntityUpdate");
+        MoveEntity(referenceEntity);
         MoveEntities();
         UpdateDistancesToReference();
         Profiler.EndSample();
@@ -126,16 +129,16 @@ public class EntityManager : MonoBehaviour
         }
     }
 
-    public ISortable[] GetSortables() {
+    public Entity[] GetEntities() {
         return entities.ToArray();
     }
 }
 
-internal class Entity : ISortable {
+[System.Serializable]
+public class Entity {
     public Transform transform;
     public SpriteRenderer sr;
     public Vector2 dir;
-
     public float SortValue { get; set; }
 
     public Entity(Transform transform, SpriteRenderer sr) {

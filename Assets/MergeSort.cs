@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MergeSort : Sorter
 {
-    public override ISortable[] Sort(ISortable[] input) {
+    public override Entity[] Sort(Entity[] input) {
         return input;
     }
 }
