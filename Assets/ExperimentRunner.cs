@@ -1,28 +1,37 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class ExperimentRunner : MonoBehaviour
 {
     [SerializeField]
-    private ExperimentData entityData;
+    private EntityManager entityManager;
 
     [SerializeField]
     private int entityStepAmount = 100;
 
     [SerializeField]
+    private int entitySteps = 10;
+
+    [SerializeField]
     private Sorter[] sorters;
 
     private void Start() {
-        entityData.SetEntityCount(entityStepAmount);
+        StartCoroutine(RunExperiment());
     }
 
-    /*
+    
     private IEnumerator RunExperiment() {
         for (int i = 0; i < sorters.Length; i++) {
             Sorter sorter = sorters[i];
-            for (int ci = 0; ci < entityCounts.Count; ci++) {
-                newEntitiesAmount.SetEntityCount(100);
+            for (int j = 0; j < 10; j++) {
+                entityManager.SetEntityCount(entityStepAmount * j);
                 yield return null;
+                float startTime = Time.time;
+                while (Time.time - startTime < 1f) {
+                    yield return null;
+                }
+                /*
                 samples.Clear();
                 while (samples.Count < sampleCount) {
                     yield return null;
@@ -31,10 +40,10 @@ public class ExperimentRunner : MonoBehaviour
                 if (cancelDuration < averageTime) {
                     break;
                 }
+                */
             }
-            Destroy(detection.GameObject);
         }
-    }*/
+    }
 
     private bool CheckSortCorrectness(ISortable[] sortables) {
         for (int i = 0; i < sortables.Length - 1; i++) {

@@ -7,6 +7,8 @@ using UnityEngine.Profiling;
 
 public class EntityManager : MonoBehaviour
 {
+    [Space]
+
     [SerializeField]
     private GameObject prefab;
 
@@ -24,8 +26,6 @@ public class EntityManager : MonoBehaviour
     [SerializeField]
     private BoxCollider2D spawnArea;
 
-    public UnityEvent<ISortable[]> NewISortablesArray;
-
     private ObjectPool<Entity> entityPool;
 
     private void Awake() {
@@ -36,7 +36,7 @@ public class EntityManager : MonoBehaviour
                 actionOnDestroy: OnDestroyEntity,
                 defaultCapacity: 100,
                 maxSize: int.MaxValue
-            );
+        );
     }
 
     #region Pooling functions
@@ -70,16 +70,20 @@ public class EntityManager : MonoBehaviour
     private void MoveEntities() {
         Profiler.BeginSample("MoveEntitiesFunction");
         for (int i = 0; i < entities.Count; i++) {
-            if (TouchesSpawnAreaCollider(entities[i].transform.position)) {
-                entities[i].dir = (entities[i].dir * directionWeight + new Vector2(UnityEngine.Random.value - 0.5f, UnityEngine.Random.value - 0.5f)).normalized;
-            } else {
-                entities[i].transform.position = GetRandomSpotWithinSpawnArea();
-                entities[i].dir = new Vector2(UnityEngine.Random.value - 0.5f, UnityEngine.Random.value - 0.5f).normalized;
-            }
-
-            MoveTransform(entities[i].transform, entities[i].dir * entitySpeed * Time.deltaTime);
+            MoveEntity(entities[i]);
         }
         Profiler.EndSample();
+    }
+
+    private void MoveEntity(Entity entity) {
+        if (TouchesSpawnAreaCollider(entity.transform.position)) {
+            entity.dir = (entity.dir * directionWeight + new Vector2(UnityEngine.Random.value - 0.5f, UnityEngine.Random.value - 0.5f)).normalized;
+        } else {
+            entity.transform.position = GetRandomSpotWithinSpawnArea();
+            entity.dir = new Vector2(UnityEngine.Random.value - 0.5f, UnityEngine.Random.value - 0.5f).normalized;
+        }
+
+        MoveTransform(entity.transform, entity.dir * entitySpeed * Time.deltaTime);
     }
 
     private Vector2 GetRandomSpotWithinSpawnArea() {
@@ -99,7 +103,7 @@ public class EntityManager : MonoBehaviour
         return spawnArea.OverlapPoint(pos);
     }
 
-    public void UpdateEntities() {
+    public void Update() {
         Profiler.BeginSample("EntityUpdate");
         MoveEntities();
         UpdateDistancesToReference();
@@ -107,20 +111,23 @@ public class EntityManager : MonoBehaviour
     }
 
     public void SetEntityCount(int limit) {
-        if(entities.Count > limit) {
-            int newEntitiesAmount = entities.Count - limit;
+        if (entities.Count < limit) {
+            int newEntitiesAmount = limit - entities.Count;
             for (int i = 0; i < newEntitiesAmount; i++) {
                 entities.Add(entityPool.Get());
             }
-        } else if(entities.Count < limit) {
-            for (int i = entities.Count; i < limit; i--) {
-                Entity entity = entities[i];
+        } else if(entities.Count > limit) {
+            int removeEntitiesAmount = entities.Count - limit;
+            for (int i = 0; i < removeEntitiesAmount; i++) {
+                Entity entity = entities[entities.Count - 1];
                 entities.Remove(entity);
                 entityPool.Release(entity);
             }
         }
+    }
 
-        NewISortablesArray?.Invoke(entities.ToArray());
+    public ISortable[] GetSortables() {
+        return entities.ToArray();
     }
 }
 
