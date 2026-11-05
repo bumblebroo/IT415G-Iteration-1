@@ -20,7 +20,7 @@ public class ExperimentSampler {
         sampleColumns = new List<sampleColumn>();
 
         string[] stringValues = new string[entityCounts.Length];
-        for (int i = 1; i < entityCounts.Length; i++) {
+        for (int i = 0; i < entityCounts.Length; i++) {
             stringValues[i] = entityCounts[i].ToString();
         }
 
@@ -30,7 +30,7 @@ public class ExperimentSampler {
     }
 
     public void StartColumn(string columnName) {
-        sampleColumns.Add(new sampleColumn(columnName, sampleColumns[0].Values.Length));
+        sampleColumns.Add(new sampleColumn(columnName, sampleColumns[0].ValueCount));
     }
 
     public void StartAverage() {
@@ -65,42 +65,55 @@ public class ExperimentSampler {
     }
 
     public void ExportSampleCSV(string filename) {
-        using(StreamWriter streamWriter = new StreamWriter(filename)) {
+        Debug.Log($".csv file located at:{Application.persistentDataPath}");
+        using(StreamWriter streamWriter = new StreamWriter(Path.Combine(Application.persistentDataPath, filename))) {
             for (int i = 0; i < sampleColumns.Count - 1; i++) {
                 streamWriter.Write($"{sampleColumns[i].ColumnName}, ");
             }
-            streamWriter.Write($"{sampleColumns[sampleColumns.Count - 1].ColumnName}");
+            streamWriter.Write($"{sampleColumns[sampleColumns.Count - 1].ColumnName}{streamWriter.NewLine}");
+            for (int i = 0; i < sampleColumns[0].ValueCount; i++) {
+                for (int j = 0; j < sampleColumns.Count - 1; j++) {
+                    streamWriter.Write($"{sampleColumns[j].GetValue(i)}, ");
+                }
+                streamWriter.Write($"{sampleColumns[sampleColumns.Count - 1].GetValue(i)}{streamWriter.NewLine}");
+            }
         }
     }
 }
 
-public struct sampleColumn {
+public class sampleColumn {
     private string columnName;
     private string[] values;
 
-    private int valueCounter;
+    private int index;
 
     public string ColumnName => columnName;
-    public string[] Values => values;
+    public int ValueCount => values.Length;
 
     public sampleColumn(string name, string[] values) {
         columnName = name;
         this.values = values;
-        valueCounter = values.Length;
+        index = values.Length;
     }
 
     public sampleColumn(string name, int valueCount) {
         columnName = name;
         values = new string[valueCount];
-        valueCounter = 0;
     }
 
     public void AddToValues(string value) {
-        if(valueCounter > values.Length) {
+        if(index > values.Length) {
             return;
         }
 
-        values[valueCounter] = value;
-        valueCounter++;
+        values[index] = value;
+        index++;
+    }
+
+    public string GetValue(int index) {
+        if (values[index] == null) {
+            return "NA";
+        }
+        return values[index];
     }
 }

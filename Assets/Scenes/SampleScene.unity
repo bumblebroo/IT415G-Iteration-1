@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 258525006}
   - component: {fileID: 258525005}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: InsertSort
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -395,7 +395,7 @@ GameObject:
   - component: {fileID: 916502263}
   - component: {fileID: 916502262}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: MergeSort
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -527,6 +527,50 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 68.79, y: 37.67}
   m_EdgeRadius: 0
+--- !u!1 &1678955585
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1678955587}
+  - component: {fileID: 1678955586}
+  m_Layer: 0
+  m_Name: Mergesesfe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1678955586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1678955585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22e0252336069d641a4c4752eecb496a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+--- !u!4 &1678955587
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1678955585}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.12987, y: -0.70153, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1913079175
 GameObject:
   m_ObjectHideFlags: 0
@@ -573,12 +617,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ExperimentRunner
   entityManager: {fileID: 1180359099}
   entityStepAmount: 100
-  entitySteps: 50
-  entityAmounts: 64000000c80000002c01000090010000f401000058020000bc0200002003000084030000e80300004c040000b00400001405000078050000dc05000040060000a4060000080700006c070000d00700003408000098080000fc08000060090000c4090000280a00008c0a0000f00a0000540b0000b80b00001c0c0000800c0000e40c0000480d0000ac0d0000100e0000740e0000d80e00003c0f0000a00f00000410000068100000cc1000003011000094110000f81100005c120000c01200002413000088130000
+  entitySteps: 10
+  entityAmounts: 64000000c80000002c01000090010000f401000058020000bc0200002003000084030000e8030000
   sampleCount: 100
   cancelDuration: 100
   sorters:
   - {fileID: 258525005}
+  - {fileID: 1678955586}
 --- !u!212 &2022869726042218172
 SpriteRenderer:
   serializedVersion: 2
@@ -664,7 +709,7 @@ GameObject:
   - component: {fileID: 2304262364187272477}
   - component: {fileID: 2022869726042218172}
   m_Layer: 0
-  m_Name: Square
+  m_Name: ReferenceSquare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -678,6 +723,7 @@ SceneRoots:
   - {fileID: 619394802}
   - {fileID: 1180359098}
   - {fileID: 1913079177}
+  - {fileID: 2304262364187272477}
   - {fileID: 916502263}
   - {fileID: 258525006}
-  - {fileID: 2304262364187272477}
+  - {fileID: 1678955587}

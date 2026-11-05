@@ -67,12 +67,13 @@ public class ExperimentRunner : MonoBehaviour
                 }
 
                 double averageTime = experimentSampler.FinishSampleAverage();
+
                 if (cancelDuration < averageTime) {
                     break;
                 }
             }
         }
-        //experimentSampler.ExportSampleCSV();
+        experimentSampler.ExportSampleCSV("test.csv");
     }
 
     private void SetColour(Entity[] sortedEntities) {
