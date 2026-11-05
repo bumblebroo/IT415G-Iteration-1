@@ -16,6 +16,8 @@ public class ExperimentRunner : MonoBehaviour
     [SerializeField]
     private Sorter[] sorters;
 
+    private ExperimentSampler experimentSampler;
+
     private void Start() {
         StartCoroutine(RunExperiment());
     }
@@ -24,11 +26,14 @@ public class ExperimentRunner : MonoBehaviour
     private IEnumerator RunExperiment() {
         for (int i = 0; i < sorters.Length; i++) {
             Sorter sorter = sorters[i];
-            for (int j = 0; j < 10; j++) {
+            for (int j = 1; j < entitySteps; j++) {
                 entityManager.SetEntityCount(entityStepAmount * j);
                 yield return null;
                 float startTime = Time.time;
                 while (Time.time - startTime < 1f) {
+                    if (!CheckSortCorrectness(sorter.Sort(entityManager.GetSortables()))) {
+                        //Debug.LogError("Not sorted correctly");
+                    }
                     yield return null;
                 }
                 /*
@@ -43,6 +48,10 @@ public class ExperimentRunner : MonoBehaviour
                 */
             }
         }
+    }
+
+    private void SetColour() {
+
     }
 
     private bool CheckSortCorrectness(ISortable[] sortables) {
