@@ -50,17 +50,21 @@ public class ExperimentRunner : MonoBehaviour
                 Profiler.EndSample();
                 yield return null;
 
+
                 experimentSampler.StartAverage();
                 while (!experimentSampler.FinishedSamples) {
                     Profiler.BeginSample("Sampling and sorting");
 
+                    Entity[] toSort = entityManager.GetEntities();
+
                     experimentSampler.StartSample();
                     
-                    Entity[] sortedEntities = sorter.Sort(entityManager.GetEntities());
+                    sorter.Sort(toSort);
                     
                     experimentSampler.EndSample();
                     
-                    SetColour(sortedEntities);
+                    SetColour(toSort);
+                    Debug.Log(CheckSortCorrectness(toSort));
                     
                     Profiler.EndSample();
                     yield return null;
@@ -72,18 +76,26 @@ public class ExperimentRunner : MonoBehaviour
                     break;
                 }
             }
+
+            // trims the entity list to avoid excess memory consumption
+            if(i == 0) {
+                entityManager.HitMaxAmount();
+            }
         }
         experimentSampler.ExportSampleCSV("test.csv");
     }
 
     private void SetColour(Entity[] sortedEntities) {
+        Debug.Log(sortedEntities.Length);
         int halfway = sortedEntities.Length / 2;
         for (int i = 0; i < sortedEntities.Length; i++) {
             if(i < halfway) {
-                sortedEntities[i].sr.color = Color.gray;
+                sortedEntities[i].sr.color = Color.black;
+                sortedEntities[i].sr.sortingOrder = 1;
                 continue;
             }
             sortedEntities[i].sr.color = Color.white;
+            sortedEntities[i].sr.sortingOrder = 0;
         }
     }
 

@@ -129,6 +129,10 @@ public class EntityManager : MonoBehaviour
         }
     }
 
+    public void HitMaxAmount() {
+        entities.TrimExcess();
+    }
+
     public Entity[] GetEntities() {
         return entities.ToArray();
     }
