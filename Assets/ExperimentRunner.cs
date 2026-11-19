@@ -56,15 +56,16 @@ public class ExperimentRunner : MonoBehaviour
                     Profiler.BeginSample("Sampling and sorting");
 
                     Entity[] toSort = entityManager.GetEntities();
+                    Entity[] results = new Entity[toSort.Length];
 
                     experimentSampler.StartSample();
-                    
-                    sorter.Sort(toSort);
+
+                    results = sorter.Sort(toSort);
                     
                     experimentSampler.EndSample();
                     
-                    SetColour(toSort);
-                    Debug.Log(CheckSortCorrectness(toSort));
+                    SetColour(results);
+                    Debug.Log(CheckSortCorrectness(results));
                     
                     Profiler.EndSample();
                     yield return null;
