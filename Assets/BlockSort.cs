@@ -24,7 +24,7 @@ public class BlockSort : Sorter
             start = end;
         }
 
-        //Debug.Log(input[input.Length - 1]);
+        Debug.Log(input[input.Length - 1]);
 
         // merge sections
         for (int i = 0; i < result.Length; i++) {
@@ -38,9 +38,9 @@ public class BlockSort : Sorter
                 }
 
                 int checkEntityIndex = j * sectionSize + mergeIndexes[j];
-                Debug.Log("check");
+                //Debug.Log("check");
                 if (input[checkEntityIndex].SortValue < entity.SortValue) {
-                    Debug.Log($"Found better! old : {entity.SortValue} new : {input[checkEntityIndex].SortValue}, at section {j}, prev section {section}");
+                    //Debug.Log($"Found better! old : {entity.SortValue} new : {input[checkEntityIndex].SortValue}, at section {j}, prev section {section}");
                     section = j;
                     entity = input[checkEntityIndex];
                 }
@@ -68,10 +68,6 @@ public class BlockSort : Sorter
                 Entity temp = input[j - 1];
                 input[j - 1] = input[j];
                 input[j] = temp;
-            }
-
-            if(i - start > 50) {
-                throw new System.Exception();
             }
         }
         return input;
