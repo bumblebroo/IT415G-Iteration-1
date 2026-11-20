@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Pool;
@@ -139,7 +141,7 @@ public class EntityManager : MonoBehaviour
 }
 
 [System.Serializable]
-public class Entity {
+public class Entity : IComparable<Entity>{
     public Transform transform;
     public SpriteRenderer sr;
     public Vector2 dir;
@@ -148,5 +150,13 @@ public class Entity {
     public Entity(Transform transform, SpriteRenderer sr) {
         this.transform = transform;
         this.sr = sr;
+    }
+
+    public int CompareTo(Entity comparePart) {
+        if (comparePart == null)
+            return 1;
+
+        else
+            return this.SortValue.CompareTo(comparePart.SortValue);
     }
 }

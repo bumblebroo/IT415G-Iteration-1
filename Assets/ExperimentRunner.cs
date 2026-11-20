@@ -65,7 +65,6 @@ public class ExperimentRunner : MonoBehaviour
                     experimentSampler.EndSample();
                     
                     SetColour(results);
-                    Debug.Log(CheckSortCorrectness(results));
                     
                     Profiler.EndSample();
                     yield return null;
@@ -87,7 +86,6 @@ public class ExperimentRunner : MonoBehaviour
     }
 
     private void SetColour(Entity[] sortedEntities) {
-        Debug.Log(sortedEntities.Length);
         int halfway = sortedEntities.Length / 2;
         for (int i = 0; i < sortedEntities.Length; i++) {
             if(i < halfway) {
